@@ -77,7 +77,7 @@ public class HackRFSweepSettingsUI extends JPanel
 	private JSlider sliderGainLNA;
 	private JCheckBox chckbxAntennaLNA;
 	private JLabel lblPeakFall;
-	private JLabel labelSetReference;
+	private JLabel lblSetReference;
 	private JComboBox<BigDecimal> comboBoxLineThickness;
 	private JLabel lblPersistentDisplay;
 	private JCheckBox checkBoxPersistentDisplay;
@@ -383,8 +383,8 @@ public class HackRFSweepSettingsUI extends JPanel
 		
 		btnSetRelative = new JButton("Set new Reference");
 		
-		labelSetReference = new JLabel("  Set Reference");
-		tab2.add(labelSetReference, "flowx,cell 0 24");
+		lblSetReference = new JLabel("  Set Reference");
+		tab2.add(lblSetReference, "flowx,cell 0 24");
 		btnSetRelative.setBackground(Color.BLACK);
 		tab2.add(btnSetRelative, "cell 0 24,alignx right");
 
@@ -464,9 +464,9 @@ public class HackRFSweepSettingsUI extends JPanel
 		
 		hRF.isRelativeModeEnabled().addListener((enabled) -> {
 			SwingUtilities.invokeLater(()->{
-				spinnerPeakFallSpeed.setEnabled(enabled);
-				spinnerPeakFallSpeed.setVisible(enabled);
-				lblPeakFall.setVisible(enabled);
+				btnSetRelative.setEnabled(enabled);
+				btnSetRelative.setVisible(enabled);
+				lblSetReference.setVisible(enabled);
 			});
 		});
 		hRF.isRelativeModeEnabled().callObservers();
