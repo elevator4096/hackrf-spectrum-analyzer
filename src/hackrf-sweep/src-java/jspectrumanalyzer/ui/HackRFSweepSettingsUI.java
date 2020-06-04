@@ -77,6 +77,7 @@ public class HackRFSweepSettingsUI extends JPanel
 	private JSlider sliderGainLNA;
 	private JCheckBox chckbxAntennaLNA;
 	private JLabel lblPeakFall;
+	private JLabel labelSetReference;
 	private JComboBox<BigDecimal> comboBoxLineThickness;
 	private JLabel lblPersistentDisplay;
 	private JCheckBox checkBoxPersistentDisplay;
@@ -382,7 +383,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		
 		btnSetRelative = new JButton("Set new Reference");
 		
-		Label labelSetReference = new Label("  Set Reference");
+		labelSetReference = new JLabel("  Set Reference");
 		tab2.add(labelSetReference, "flowx,cell 0 24");
 		btnSetRelative.setBackground(Color.BLACK);
 		tab2.add(btnSetRelative, "cell 0 24,alignx right");
@@ -420,7 +421,7 @@ public class HackRFSweepSettingsUI extends JPanel
 							hRF.getFrequency()
 		); 
 		new MVCController(chckbxShowPeaks, hRF.isChartsPeaksVisible());
-		new MVCController(chckbxRelativeModeEnabled, hRF.isChartsPeaksVisible());
+		new MVCController(chckbxRelativeModeEnabled, hRF.isRelativeModeEnabled());
 		new MVCController(chckbxFilterSpectrum, hRF.isFilterSpectrum());
 		new MVCController(chckbxRemoveSpurs, hRF.isSpurRemoval());
 		
@@ -460,6 +461,15 @@ public class HackRFSweepSettingsUI extends JPanel
 			});
 		});
 		hRF.isChartsPeaksVisible().callObservers();
+		
+		hRF.isRelativeModeEnabled().addListener((enabled) -> {
+			SwingUtilities.invokeLater(()->{
+				spinnerPeakFallSpeed.setEnabled(enabled);
+				spinnerPeakFallSpeed.setVisible(enabled);
+				lblPeakFall.setVisible(enabled);
+			});
+		});
+		hRF.isRelativeModeEnabled().callObservers();
 		
 		new MVCController(comboBoxDecayRate, hRF.getPersistentDisplayDecayRate());
 		hRF.isPersistentDisplayVisible().addListener((visible) -> {

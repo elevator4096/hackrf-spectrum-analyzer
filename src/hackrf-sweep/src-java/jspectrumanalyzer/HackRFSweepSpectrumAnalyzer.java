@@ -231,6 +231,7 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 	private ModelValueInt							parameterSamples					= new ModelValueInt("Samples", 8192);
 
 	private ModelValueBoolean						parameterShowPeaks					= new ModelValueBoolean("Show peaks", false);
+	private ModelValueBoolean						parameterRelativeMode				= new ModelValueBoolean("Relative Mode", false);
 
 	private ModelValueBoolean 						parameterDebugDisplay				= new ModelValueBoolean("Debug", false);
 	
@@ -459,6 +460,11 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 	@Override
 	public ModelValueBoolean isChartsPeaksVisible() {
 		return parameterShowPeaks;
+	}
+	
+	@Override
+	public ModelValueBoolean isRelativeModeEnabled() {
+		return parameterRelativeMode;
 	}
 	
 	@Override

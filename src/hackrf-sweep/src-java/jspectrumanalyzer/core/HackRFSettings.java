@@ -61,6 +61,8 @@ public interface HackRFSettings {
 	public ModelValueBoolean isCapturingPaused();
 
 	public ModelValueBoolean isChartsPeaksVisible();
+	
+	public ModelValueBoolean isRelativeModeEnabled();
 
 	public ModelValueBoolean isFilterSpectrum();
 
