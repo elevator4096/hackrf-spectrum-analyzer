@@ -141,7 +141,6 @@ public class HackRFSweepSettingsUI extends JPanel
 		tab1.setForeground(Color.WHITE);
 		tab1.setBackground(Color.BLACK);
 		
-		JPanel tab2	= new JPanel(new MigLayout("", "[123.00px,grow,leading]", "[][0][][][0][][][0][][0][][][0][][0][][][0][0][][][0][][0][grow,fill]"));
 		JPanel tab2	= new JPanel(new MigLayout("", "[123.00px,grow,leading]", "[][0][][][0][][][0][][0][][][0][][0][][][0][0][][][0][][0][0][grow,fill]"));
 		tab2.setForeground(Color.WHITE);
 		tab2.setBackground(Color.BLACK);
