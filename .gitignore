@@ -3,3 +3,4 @@
 /*.cmd
 /*.exe
 .project
+src/hackrf-sweep/compile.sh

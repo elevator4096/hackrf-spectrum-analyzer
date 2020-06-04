@@ -64,8 +64,10 @@ public class HackRFSweepSettingsUI extends JPanel
 	private JSlider slider_waterfallPaletteStart;
 	private JSlider slider_waterfallPaletteSize;
 	private JCheckBox chckbxShowPeaks;
+	private JCheckBox chckbxRelativeModeEnabled;
 	private JCheckBox chckbxRemoveSpurs;
 	private JButton btnPause;
+	private JButton btnSetRelative;
 	private SpinnerListModel spinnerModelFFTBinHz;
 	private FrequencySelectorRangeBinder frequencyRangeSelector;
 	private JCheckBox chckbxFilterSpectrum;
@@ -140,6 +142,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		tab1.setBackground(Color.BLACK);
 		
 		JPanel tab2	= new JPanel(new MigLayout("", "[123.00px,grow,leading]", "[][0][][][0][][][0][][0][][][0][][0][][][0][0][][][0][][0][grow,fill]"));
+		JPanel tab2	= new JPanel(new MigLayout("", "[123.00px,grow,leading]", "[][0][][][0][][][0][][0][][][0][][0][][][0][0][][][0][][0][0][grow,fill]"));
 		tab2.setForeground(Color.WHITE);
 		tab2.setBackground(Color.BLACK);
 		
@@ -296,11 +299,20 @@ public class HackRFSweepSettingsUI extends JPanel
 		lblShowPeaks.setForeground(Color.WHITE);
 		tab2.add(lblShowPeaks, "flowx,cell 0 10,growx");
 		
+		JLabel lblRelativeModeEnabled = new JLabel("Enable Relative Mode");
+		lblRelativeModeEnabled.setForeground(Color.WHITE);
+		tab2.add(lblRelativeModeEnabled, "flowx,cell 0 23,growx");
+		
 		
 		chckbxShowPeaks = new JCheckBox("");
 		chckbxShowPeaks.setForeground(Color.WHITE);
 		chckbxShowPeaks.setBackground(Color.BLACK);
 		tab2.add(chckbxShowPeaks, "cell 0 10,alignx right");
+		
+		chckbxRelativeModeEnabled = new JCheckBox("");
+		chckbxRelativeModeEnabled.setForeground(Color.WHITE);
+		chckbxRelativeModeEnabled.setBackground(Color.BLACK);
+		tab2.add(chckbxRelativeModeEnabled, "cell 0 23,alignx right");
 		
 		JLabel lblSpurFiltermay = new JLabel("Spur filter (may distort real signals)");
 		lblSpurFiltermay.setForeground(Color.WHITE);
@@ -369,6 +381,14 @@ public class HackRFSweepSettingsUI extends JPanel
 		checkBoxDebugDisplay.setBackground(Color.BLACK);
 		tab2.add(checkBoxDebugDisplay, "cell 0 22,alignx right");
 		
+		btnSetRelative = new JButton("Set new Reference");
+		
+		Label labelSetReference = new Label("  Set Reference");
+		tab2.add(labelSetReference, "flowx,cell 0 24");
+		btnSetRelative.setBackground(Color.BLACK);
+		tab2.add(btnSetRelative, "cell 0 24,alignx right");
+
+		
 		bindViewToModel();
 	}
 
@@ -401,6 +421,7 @@ public class HackRFSweepSettingsUI extends JPanel
 							hRF.getFrequency()
 		); 
 		new MVCController(chckbxShowPeaks, hRF.isChartsPeaksVisible());
+		new MVCController(chckbxRelativeModeEnabled, hRF.isChartsPeaksVisible());
 		new MVCController(chckbxFilterSpectrum, hRF.isFilterSpectrum());
 		new MVCController(chckbxRemoveSpurs, hRF.isSpurRemoval());
 		
