@@ -67,7 +67,6 @@ public class HackRFSweepSettingsUI extends JPanel
 	private JCheckBox chckbxRelativeModeEnabled;
 	private JCheckBox chckbxRemoveSpurs;
 	private JButton btnPause;
-	private JButton btnSetRelative;
 	private SpinnerListModel spinnerModelFFTBinHz;
 	private FrequencySelectorRangeBinder frequencyRangeSelector;
 	private JCheckBox chckbxFilterSpectrum;
@@ -77,7 +76,6 @@ public class HackRFSweepSettingsUI extends JPanel
 	private JSlider sliderGainLNA;
 	private JCheckBox chckbxAntennaLNA;
 	private JLabel lblPeakFall;
-	private JLabel lblSetReference;
 	private JComboBox<BigDecimal> comboBoxLineThickness;
 	private JLabel lblPersistentDisplay;
 	private JCheckBox checkBoxPersistentDisplay;
@@ -381,14 +379,6 @@ public class HackRFSweepSettingsUI extends JPanel
 		checkBoxDebugDisplay.setBackground(Color.BLACK);
 		tab2.add(checkBoxDebugDisplay, "cell 0 22,alignx right");
 		
-		btnSetRelative = new JButton("Set new Reference");
-		
-		lblSetReference = new JLabel("  Set Reference");
-		tab2.add(lblSetReference, "flowx,cell 0 24");
-		btnSetRelative.setBackground(Color.BLACK);
-		tab2.add(btnSetRelative, "cell 0 24,alignx right");
-
-		
 		bindViewToModel();
 	}
 
@@ -428,7 +418,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		new MVCController((valueChangedCall) -> btnPause.addActionListener((event) -> valueChangedCall.accept(!hRF.isCapturingPaused().getValue())), 
 				isCapt -> btnPause.setText(!isCapt ? "Pause"  : "Resume"), 
 				hRF.isCapturingPaused());
-	
+		
 		new MVCController(spinnerPeakFallSpeed, hRF.getPeakFallRate(), in -> (Integer)in, in -> in);
 	
 		new MVCController(comboBoxFrequencyAllocationBands, hRF.getFrequencyAllocationTable());
@@ -464,9 +454,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		
 		hRF.isRelativeModeEnabled().addListener((enabled) -> {
 			SwingUtilities.invokeLater(()->{
-				btnSetRelative.setEnabled(enabled);
-				btnSetRelative.setVisible(enabled);
-				lblSetReference.setVisible(enabled);
+			hRF.resetReference();
 			});
 		});
 		hRF.isRelativeModeEnabled().callObservers();

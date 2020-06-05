@@ -8,18 +8,21 @@ import jspectrumanalyzer.core.jfc.XYSeriesImmutable;
 
 public class DatasetSpectrumPeak extends DatasetSpectrum
 {
-	protected long		lastAdded			= System.currentTimeMillis();
+	protected long		lastAddedPeak			= System.currentTimeMillis();
+	protected long		lastAddedRef			= System.currentTimeMillis();
 	protected long		peakFalloutMillis	= 1000;
 	protected float		peakFallThreshold;
 	/**
 	 * stores EMA decaying peaks
 	 */
 	protected float[]	spectrumPeak;
+	protected float[]	spectrumRef;
 
 	/**
 	 * stores real peaks and if {@link #spectrumPeak} falls more than preset value below it, start using values from {@link #spectrumPeak}
 	 */
 	protected float[]	spectrumPeakHold;
+	
 	
 	public DatasetSpectrumPeak(float fftBinSizeHz, int freqStartMHz, int freqStopMHz, float spectrumInitPower, float peakFallThreshold, long peakFalloutMillis)
 	{
@@ -35,6 +38,9 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		Arrays.fill(spectrumPeak, spectrumInitPower);
 		spectrumPeakHold = new float[datapoints];
 		Arrays.fill(spectrumPeakHold, spectrumInitPower);
+		
+		spectrumRef = new float[datapoints];
+		Arrays.fill(spectrumRef, spectrumInitPower);
 		
 
 	}
@@ -72,6 +78,31 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		XYSeriesImmutable xySeriesF	= new XYSeriesImmutable(name, xValues, yValues);
 		return xySeriesF;
 	}
+	
+	public XYSeriesImmutable createRefsDataset(String name) {
+		float[] xValues	= new float[spectrum.length];
+		float[] yValues	= spectrumRef;
+		for (int i = 0; i < spectrum.length; i++)
+		{
+			float freq = (freqStartHz + fftBinSizeHz * i) / 1000000f;
+			xValues[i]	= freq;
+		}
+		XYSeriesImmutable xySeriesF	= new XYSeriesImmutable(name, xValues, yValues);
+		return xySeriesF;
+	}
+	
+	public XYSeriesImmutable createRelativeDataset(String name) {
+		float[] xValues	= new float[spectrum.length];
+		float[] yValues	= spectrum;
+		for (int i = 0; i < spectrum.length; i++)
+		{
+			float freq = (freqStartHz + fftBinSizeHz * i) / 1000000f;
+			xValues[i] = freq;
+			yValues[i] = spectrum[i]-spectrumRef[i];
+		}
+		XYSeriesImmutable xySeriesF	= new XYSeriesImmutable(name, xValues, yValues);
+		return xySeriesF;
+	}
 
 	public double calculateSpectrumPeakPower(){
 		double powerSum	= 0;
@@ -92,11 +123,11 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 			debugLastPeakRerfreshTime	= System.currentTimeMillis();
 		}
 		
-		long timeDiffFromPrevValueMillis = System.currentTimeMillis() - lastAdded;
+		long timeDiffFromPrevValueMillis = System.currentTimeMillis() - lastAddedPeak;
 		if (timeDiffFromPrevValueMillis < 1)
 			timeDiffFromPrevValueMillis = 1;
 		
-		lastAdded = System.currentTimeMillis();
+		lastAddedPeak = System.currentTimeMillis();
 		
 //		peakFallThreshold = 10;
 //		peakFalloutMillis	= 30000;
@@ -116,11 +147,49 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 			}
 		}
 	}
+	
+	public void refreshRefSpectrum()
+	{
+		long timeDiffFromPrevValueMillis = System.currentTimeMillis() - lastAddedRef;
+		if (timeDiffFromPrevValueMillis < 1)
+			timeDiffFromPrevValueMillis = 1;
+		
+		lastAddedRef = System.currentTimeMillis();
+		
+		for (int spectrIndex = 0; spectrIndex < spectrum.length; spectrIndex++)
+		{
+			float spectrumVal = spectrum[spectrIndex];
+			spectrumRef[spectrIndex] = spectrumVal;
+			/*
+			if (spectrumVal > spectrumRefHold[spectrIndex])
+			{
+				spectrumRefHold[spectrIndex] = spectrumRef[spectrIndex] = spectrumVal;
+			}
+			*/
+			/*
+			spectrumRef[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumRef[spectrIndex], timeDiffFromPrevValueMillis,
+					peakFalloutMillis);
+			*/
+					
+			/*
+			
+			if (spectrumRefHold[spectrIndex] - spectrumRef[spectrIndex] > peakFallThreshold)
+			{
+				spectrumRefHold[spectrIndex] = spectrumRef[spectrIndex];
+			}
+			*/
+		}
+	}
 
 	public void resetPeaks()
 	{
 		Arrays.fill(spectrumPeak, spectrumInitPower);
 		Arrays.fill(spectrumPeakHold, spectrumInitPower);
+	}
+	
+	public void resetRef()
+	{
+		Arrays.fill(spectrumRef, spectrumInitPower);
 	}
 
 	@Override protected Object clone() throws CloneNotSupportedException

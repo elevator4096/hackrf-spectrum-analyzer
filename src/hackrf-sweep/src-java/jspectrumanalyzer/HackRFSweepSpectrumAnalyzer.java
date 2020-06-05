@@ -186,14 +186,14 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 		new HackRFSweepSpectrumAnalyzer();
 	}
 
-	public boolean									flagIsHWSendingData						= false;
+	public boolean									flagIsHWSendingData					= false;
 	private float									alphaFreqAllocationTableBandsImage	= 0.5f;
 	private float									alphaPersistentDisplayImage			= 1.0f;
 	private JFreeChart								chart;
 
 	private ModelValue<Rectangle2D>					chartDataArea						= new ModelValue<Rectangle2D>(
 			"Chart data area", new Rectangle2D.Double(0, 0, 1, 1));
-	private XYSeriesCollectionImmutable				chartDataset								= new XYSeriesCollectionImmutable();
+	private XYSeriesCollectionImmutable				chartDataset						= new XYSeriesCollectionImmutable();
 	private XYLineAndShapeRenderer					chartLineRenderer;
 	private ChartPanel								chartPanel;
 	private ColorScheme								colors								= new ColorScheme();
@@ -205,11 +205,11 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 	 * Capture a GIF of the program for the GITHUB page
 	 */
 	private ScreenCapture							gifCap								= null;
-	private ArrayList<HackRFEventListener>			hRFlisteners							= new ArrayList<>();
-	private ArrayBlockingQueue<FFTBins>				hwProcessingQueue						= new ArrayBlockingQueue<>(
+	private ArrayList<HackRFEventListener>			hRFlisteners						= new ArrayList<>();
+	private ArrayBlockingQueue<FFTBins>				hwProcessingQueue					= new ArrayBlockingQueue<>(
 			1000);
 	private BufferedImage							imageFrequencyAllocationTableBands	= null;
-	private boolean											isChartDrawing						= false;
+	private boolean									isChartDrawing						= false;
 	private ReentrantLock							lock								= new ReentrantLock();
 
 	private ModelValueBoolean						parameterAntennaLNA   				= new ModelValueBoolean("Antenna LNA +14dB", false);
@@ -415,6 +415,13 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 	@Override
 	public ModelValueInt getGainVGA() {
 		return parameterGainVGA;
+	}
+	
+	@Override
+	public void resetReference() {
+		if (datasetSpectrum!=null) {
+			datasetSpectrum.refreshRefSpectrum();
+		}
 	}
 
 	@Override
@@ -656,15 +663,25 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 						
 						XYSeries spectrumSeries;
 						XYSeries spectrumPeaks;
+						XYSeries spectrumRefs;
 
 						if (true) {
-							spectrumSeries = datasetSpectrum.createSpectrumDataset("spectrum");
+							
+							if (parameterRelativeMode.getValue()) {
+								spectrumRefs   = datasetSpectrum.createRefsDataset("refs");
+								spectrumSeries = datasetSpectrum.createRelativeDataset("spectrum");
+							} else {
+								spectrumRefs = new XYSeries("refs");
+								spectrumSeries = datasetSpectrum.createSpectrumDataset("spectrum");
+							}
+							
 
 							if (parameterShowPeaks.getValue()) {
 								spectrumPeaks = datasetSpectrum.createPeaksDataset("peaks");
 							} else {
 								spectrumPeaks = spectrumPeaksEmpty;
 							}
+							
 						} else {
 							spectrumSeries = new XYSeries("spectrum", false, true);
 							spectrumSeries.setNotify(false);
@@ -719,6 +736,7 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 
 								chartDataset.removeAllSeries();
 								chartDataset.addSeries(spectrumPeaks);
+								//chartDataset.addSeries(spectrumRefs);
 								chartDataset.addSeries(spectrumSeries);
 								chart.setNotify(true);
 

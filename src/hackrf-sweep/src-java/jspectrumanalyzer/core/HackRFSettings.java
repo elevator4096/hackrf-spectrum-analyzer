@@ -57,6 +57,8 @@ public interface HackRFSettings {
 	public ModelValue<BigDecimal> getSpectrumLineThickness();
 	
 	public ModelValueInt getGainVGA();
+	
+	public void resetReference();
 
 	public ModelValueBoolean isCapturingPaused();
 
