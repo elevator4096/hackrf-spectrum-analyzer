@@ -232,6 +232,8 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 
 	private ModelValueBoolean						parameterShowPeaks					= new ModelValueBoolean("Show peaks", false);
 	private ModelValueBoolean						parameterRelativeMode				= new ModelValueBoolean("Relative Mode", false);
+	private ModelValueBoolean						parameterAveragingEnabled			= new ModelValueBoolean("Averaging Enabled", false);
+	private ModelValueInt							parameterAveragingSweeps			= new ModelValueInt("Averaging Sweeps", 3);
 
 	private ModelValueBoolean 						parameterDebugDisplay				= new ModelValueBoolean("Debug", false);
 	
@@ -433,6 +435,11 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 	public ModelValueInt getPeakFallRate() {
 		return parameterPeakFallRateSecs;
 	}
+	
+	@Override
+	public ModelValueInt getAveragingSweeps() {
+		return parameterAveragingSweeps;
+	}
 
 	@Override
 	public ModelValueInt getSamples() {
@@ -472,6 +479,11 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 	@Override
 	public ModelValueBoolean isRelativeModeEnabled() {
 		return parameterRelativeMode;
+	}
+	
+	@Override
+	public ModelValueBoolean isAveragingEnabled() {
+		return parameterAveragingEnabled;
 	}
 	
 	@Override
@@ -632,6 +644,13 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 							datasetSpectrum.refreshPeakSpectrum();
 							waterfallPlot.setStatusMessage(String.format("Total Spectrum Peak Power %.1fdBm",
 									datasetSpectrum.calculateSpectrumPeakPower()), 0);
+						}
+						
+						/**
+						 * after peak spectrum, calculate average
+						 */
+						if (parameterAveragingEnabled.getValue()) {
+							datasetSpectrum.refreshAverageSpectrum();
 						}
 
 						/**

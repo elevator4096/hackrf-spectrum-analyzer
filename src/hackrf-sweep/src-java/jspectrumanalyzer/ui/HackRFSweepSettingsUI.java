@@ -64,6 +64,7 @@ public class HackRFSweepSettingsUI extends JPanel
 	private JSlider slider_waterfallPaletteStart;
 	private JSlider slider_waterfallPaletteSize;
 	private JCheckBox chckbxShowPeaks;
+	private JCheckBox chckbxAveragingEnabled;
 	private JCheckBox chckbxRelativeModeEnabled;
 	private JCheckBox chckbxRemoveSpurs;
 	private JButton btnPause;
@@ -71,11 +72,14 @@ public class HackRFSweepSettingsUI extends JPanel
 	private FrequencySelectorRangeBinder frequencyRangeSelector;
 	private JCheckBox chckbxFilterSpectrum;
 	private JSpinner spinnerPeakFallSpeed;
+	private JSpinner spinnerAveragingSweeps;
 	private JComboBox<FrequencyAllocationTable> comboBoxFrequencyAllocationBands;
 	private JSlider sliderGainVGA;
 	private JSlider sliderGainLNA;
 	private JCheckBox chckbxAntennaLNA;
 	private JLabel lblPeakFall;
+	private JLabel lblAveragingSweeps;
+	private JLabel lblAveragingEnabled;
 	private JComboBox<BigDecimal> comboBoxLineThickness;
 	private JLabel lblPersistentDisplay;
 	private JCheckBox checkBoxPersistentDisplay;
@@ -140,7 +144,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		tab1.setForeground(Color.WHITE);
 		tab1.setBackground(Color.BLACK);
 		
-		JPanel tab2	= new JPanel(new MigLayout("", "[123.00px,grow,leading]", "[][0][][][0][][][0][][0][][][0][][0][][][0][0][][][0][][0][0][grow,fill]"));
+		JPanel tab2	= new JPanel(new MigLayout("", "[123.00px,grow,leading]", "[][0][][][0][][][0][][0][][][0][][0][][][0][0][][][0][][0][0][0][grow,fill]"));
 		tab2.setForeground(Color.WHITE);
 		tab2.setBackground(Color.BLACK);
 		
@@ -301,6 +305,11 @@ public class HackRFSweepSettingsUI extends JPanel
 		lblRelativeModeEnabled.setForeground(Color.WHITE);
 		tab2.add(lblRelativeModeEnabled, "flowx,cell 0 23,growx");
 		
+		lblAveragingEnabled = new JLabel("Enable Averaging");
+		lblAveragingEnabled.setEnabled(true);
+		lblShowPeaks.setForeground(Color.WHITE);
+		tab2.add(lblAveragingEnabled, "flowx,cell 0 24,growx");
+		
 		
 		chckbxShowPeaks = new JCheckBox("");
 		chckbxShowPeaks.setForeground(Color.WHITE);
@@ -311,6 +320,11 @@ public class HackRFSweepSettingsUI extends JPanel
 		chckbxRelativeModeEnabled.setForeground(Color.WHITE);
 		chckbxRelativeModeEnabled.setBackground(Color.BLACK);
 		tab2.add(chckbxRelativeModeEnabled, "cell 0 23,alignx right");
+		
+		chckbxAveragingEnabled = new JCheckBox("");
+		chckbxAveragingEnabled.setForeground(Color.WHITE);
+		chckbxAveragingEnabled.setBackground(Color.BLACK);
+		tab2.add(chckbxAveragingEnabled, "cell 0 24,alignx right");
 		
 		JLabel lblSpurFiltermay = new JLabel("Spur filter (may distort real signals)");
 		lblSpurFiltermay.setForeground(Color.WHITE);
@@ -325,9 +339,17 @@ public class HackRFSweepSettingsUI extends JPanel
 		lblPeakFall.setForeground(Color.WHITE);
 		tab2.add(lblPeakFall, "flowx,cell 0 11,growx");
 		
+		lblAveragingSweeps = new JLabel("  AveragingSweeps");
+		lblAveragingSweeps.setForeground(Color.WHITE);
+		tab2.add(lblAveragingSweeps, "flowx,cell 0 25,growx");
+		
 		spinnerPeakFallSpeed = new JSpinner();
 		spinnerPeakFallSpeed.setModel(new SpinnerNumberModel(10, 0, 500, 1));
 		tab2.add(spinnerPeakFallSpeed, "cell 0 11,alignx right");
+		
+		spinnerAveragingSweeps = new JSpinner();
+		spinnerAveragingSweeps.setModel(new SpinnerNumberModel(5, 2, 100, 1));
+		tab2.add(spinnerAveragingSweeps, "cell 0 25,alignx right");
 		
 		lblPersistentDisplay = new JLabel("Persistent Display");
 		lblPersistentDisplay.setForeground(Color.WHITE);
@@ -412,6 +434,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		); 
 		new MVCController(chckbxShowPeaks, hRF.isChartsPeaksVisible());
 		new MVCController(chckbxRelativeModeEnabled, hRF.isRelativeModeEnabled());
+		new MVCController(chckbxAveragingEnabled, hRF.isAveragingEnabled());
 		new MVCController(chckbxFilterSpectrum, hRF.isFilterSpectrum());
 		new MVCController(chckbxRemoveSpurs, hRF.isSpurRemoval());
 		
@@ -420,6 +443,7 @@ public class HackRFSweepSettingsUI extends JPanel
 				hRF.isCapturingPaused());
 		
 		new MVCController(spinnerPeakFallSpeed, hRF.getPeakFallRate(), in -> (Integer)in, in -> in);
+		new MVCController(spinnerAveragingSweeps, hRF.getAveragingSweeps(), in -> (Integer)in, in -> in);
 	
 		new MVCController(comboBoxFrequencyAllocationBands, hRF.getFrequencyAllocationTable());
 		
@@ -458,6 +482,15 @@ public class HackRFSweepSettingsUI extends JPanel
 			});
 		});
 		hRF.isRelativeModeEnabled().callObservers();
+		
+		hRF.isAveragingEnabled().addListener((enabled) -> {
+			SwingUtilities.invokeLater(()->{
+				spinnerAveragingSweeps.setEnabled(enabled);
+				spinnerAveragingSweeps.setVisible(enabled);
+				lblAveragingSweeps.setVisible(enabled);
+			});
+		});
+		hRF.isAveragingEnabled().callObservers();
 		
 		new MVCController(comboBoxDecayRate, hRF.getPersistentDisplayDecayRate());
 		hRF.isPersistentDisplayVisible().addListener((visible) -> {

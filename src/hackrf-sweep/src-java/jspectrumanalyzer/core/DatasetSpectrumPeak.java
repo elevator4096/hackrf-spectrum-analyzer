@@ -10,6 +10,7 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 {
 	protected long		lastAddedPeak			= System.currentTimeMillis();
 	protected long		lastAddedRef			= System.currentTimeMillis();
+	protected long		lastAddedAverage		= System.currentTimeMillis();
 	protected long		peakFalloutMillis	= 1000;
 	protected float		peakFallThreshold;
 	/**
@@ -17,6 +18,7 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 	 */
 	protected float[]	spectrumPeak;
 	protected float[]	spectrumRef;
+	protected float[]	spectrumAverage;
 
 	/**
 	 * stores real peaks and if {@link #spectrumPeak} falls more than preset value below it, start using values from {@link #spectrumPeak}
@@ -41,6 +43,9 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		
 		spectrumRef = new float[datapoints];
 		Arrays.fill(spectrumRef, spectrumInitPower);
+		
+		spectrumAverage = new float[datapoints];
+		Arrays.fill(spectrumAverage, spectrumInitPower);
 		
 
 	}
@@ -160,24 +165,22 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		{
 			float spectrumVal = spectrum[spectrIndex];
 			spectrumRef[spectrIndex] = spectrumVal;
-			/*
-			if (spectrumVal > spectrumRefHold[spectrIndex])
-			{
-				spectrumRefHold[spectrIndex] = spectrumRef[spectrIndex] = spectrumVal;
-			}
-			*/
-			/*
-			spectrumRef[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumRef[spectrIndex], timeDiffFromPrevValueMillis,
-					peakFalloutMillis);
-			*/
-					
-			/*
-			
-			if (spectrumRefHold[spectrIndex] - spectrumRef[spectrIndex] > peakFallThreshold)
-			{
-				spectrumRefHold[spectrIndex] = spectrumRef[spectrIndex];
-			}
-			*/
+		}
+	}
+	
+	public void refreshAverageSpectrum()
+	{
+		long timeDiffFromPrevValueMillis = System.currentTimeMillis() - lastAddedAverage;
+		if (timeDiffFromPrevValueMillis < 1)
+			timeDiffFromPrevValueMillis = 1;
+		
+		lastAddedRef = System.currentTimeMillis();
+		
+		for (int spectrIndex = 0; spectrIndex < spectrum.length; spectrIndex++)
+		{
+			float spectrumVal = spectrum[spectrIndex];
+			spectrumAverage[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumAverage[spectrIndex], timeDiffFromPrevValueMillis,peakFalloutMillis);
+			spectrum[spectrIndex] = spectrumAverage[spectrIndex];
 		}
 	}
 

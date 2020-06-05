@@ -52,6 +52,8 @@ public interface HackRFSettings {
 	
 	public ModelValueInt getPeakFallRate();
 	
+	public ModelValueInt getAveragingSweeps();
+	
 	public ModelValue<FrequencyAllocationTable> getFrequencyAllocationTable();
 
 	public ModelValue<BigDecimal> getSpectrumLineThickness();
@@ -73,4 +75,6 @@ public interface HackRFSettings {
 	public void registerListener(HackRFEventListener listener);
 
 	public void removeListener(HackRFEventListener listener);
+
+	public ModelValueBoolean isAveragingEnabled();
 }
