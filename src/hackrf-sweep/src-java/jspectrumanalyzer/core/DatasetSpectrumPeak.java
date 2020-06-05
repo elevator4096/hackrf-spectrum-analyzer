@@ -83,31 +83,6 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		XYSeriesImmutable xySeriesF	= new XYSeriesImmutable(name, xValues, yValues);
 		return xySeriesF;
 	}
-	
-	public XYSeriesImmutable createRefsDataset(String name) {
-		float[] xValues	= new float[spectrum.length];
-		float[] yValues	= spectrumRef;
-		for (int i = 0; i < spectrum.length; i++)
-		{
-			float freq = (freqStartHz + fftBinSizeHz * i) / 1000000f;
-			xValues[i]	= freq;
-		}
-		XYSeriesImmutable xySeriesF	= new XYSeriesImmutable(name, xValues, yValues);
-		return xySeriesF;
-	}
-	
-	public XYSeriesImmutable createRelativeDataset(String name) {
-		float[] xValues	= new float[spectrum.length];
-		float[] yValues	= spectrum;
-		for (int i = 0; i < spectrum.length; i++)
-		{
-			float freq = (freqStartHz + fftBinSizeHz * i) / 1000000f;
-			xValues[i] = freq;
-			yValues[i] = spectrum[i]-spectrumRef[i];
-		}
-		XYSeriesImmutable xySeriesF	= new XYSeriesImmutable(name, xValues, yValues);
-		return xySeriesF;
-	}
 
 	public double calculateSpectrumPeakPower(){
 		double powerSum	= 0;
@@ -181,6 +156,16 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 			float spectrumVal = spectrum[spectrIndex];
 			spectrumAverage[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumAverage[spectrIndex], timeDiffFromPrevValueMillis,peakFalloutMillis);
 			spectrum[spectrIndex] = spectrumAverage[spectrIndex];
+		}
+	}
+	
+	public void refreshRelativeSpectrum()
+	{
+		
+		for (int spectrIndex = 0; spectrIndex < spectrum.length; spectrIndex++)
+		{
+			float spectrumVal = spectrum[spectrIndex];
+			spectrum[spectrIndex] = spectrum[spectrIndex]-spectrumRef[spectrIndex];
 		}
 	}
 

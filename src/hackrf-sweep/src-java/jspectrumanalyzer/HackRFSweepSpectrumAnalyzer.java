@@ -637,6 +637,7 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 								perfWatch.spurFilter.addDrawingTime(System.nanoTime()-start);
 							}
 						}
+						
 						/**
 						 * after filtering, calculate peak spectrum
 						 */
@@ -647,11 +648,19 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 						}
 						
 						/**
-						 * after peak spectrum, calculate average
+						 * after filtering,  calculate average
 						 */
 						if (parameterAveragingEnabled.getValue()) {
 							datasetSpectrum.refreshAverageSpectrum();
 						}
+						
+						/**
+						 * after filtering,  Relative Spectrum
+						 */
+						if (parameterRelativeMode.getValue()) {
+							datasetSpectrum.refreshRelativeSpectrum();
+						}
+						
 
 						/**
 						 * Update performance counters
@@ -682,17 +691,10 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 						
 						XYSeries spectrumSeries;
 						XYSeries spectrumPeaks;
-						XYSeries spectrumRefs;
 
 						if (true) {
 							
-							if (parameterRelativeMode.getValue()) {
-								spectrumRefs   = datasetSpectrum.createRefsDataset("refs");
-								spectrumSeries = datasetSpectrum.createRelativeDataset("spectrum");
-							} else {
-								spectrumRefs = new XYSeries("refs");
-								spectrumSeries = datasetSpectrum.createSpectrumDataset("spectrum");
-							}
+							spectrumSeries = datasetSpectrum.createSpectrumDataset("spectrum");
 							
 
 							if (parameterShowPeaks.getValue()) {
