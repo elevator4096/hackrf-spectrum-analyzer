@@ -2,37 +2,50 @@ package jspectrumanalyzer.core;
 /*
  * Simple Moving Average
  */
-import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class SMA
 {
-
 	public class MovingAverage {
 
-	    private final Queue<BigDecimal> window = new LinkedList<BigDecimal>();
+	    private final Queue<float[]> window = new LinkedList<float[]>();
 	    private final int period;
-	    private BigDecimal sum = BigDecimal.ZERO;
+	    private int datapoints;
+	    private float[] sum;
+	    private float[] result;
 
-	    public MovingAverage(int period) {
+	    public MovingAverage(int period,int datapoints) {
+	    	this.datapoints = datapoints;
+	    	sum = new float[datapoints];
 	        assert period > 0 : "Period must be a positive integer";
 	        this.period = period;
+		    Arrays.fill(sum, 0);
 	    }
 
-	    public void add(BigDecimal num) {
-	        sum = sum.add(num);
-	        window.add(num);
-	        if (window.size() > period) {
-	            sum = sum.subtract(window.remove());
+	    public void add(float[] num) {
+	    	for(int i = 0; i < datapoints; i++) {
+		        sum[i] = sum[i]+num[i];
+		        window.add(num);
+		        if (window.size() > period) {
+		            sum[i] = sum[i]-window.remove()[i];
+		        }
+	    	}
+	    }
+
+	    public float[] getAverage() {
+	        if (window.isEmpty()) {
+	        	result = new float[datapoints];
+	        	Arrays.fill(result, 0);
+	        	return result;
 	        }
-	    }
-
-	    public BigDecimal getAverage() {
-	        if (window.isEmpty()) return BigDecimal.ZERO; // technically the average is undefined
-	        BigDecimal divisor = BigDecimal.valueOf(window.size());
-	        return sum.divide(divisor, 2, RoundingMode.HALF_UP);
+	        float divisor = window.size();
+	        for(int i = 0; i < datapoints; i++) {
+	        	result[i] = sum[i]/divisor;
+	        }
+	        return result;
 	    }
 	}
 }
