@@ -307,7 +307,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		
 		lblAveragingEnabled = new JLabel("Enable Averaging");
 		lblAveragingEnabled.setEnabled(true);
-		lblShowPeaks.setForeground(Color.WHITE);
+		lblAveragingEnabled.setForeground(Color.WHITE);
 		tab2.add(lblAveragingEnabled, "flowx,cell 0 24,growx");
 		
 		
@@ -349,7 +349,7 @@ public class HackRFSweepSettingsUI extends JPanel
 		tab2.add(spinnerPeakFallSpeed, "cell 0 11,alignx right");
 		
 		spinnerAveragingSweeps = new JSpinner();
-		spinnerAveragingSweeps.setModel(new SpinnerNumberModel(15, 2, 1000, 1));
+		spinnerAveragingSweeps.setModel(new SpinnerNumberModel(50, 2, 1000, 1));
 		tab2.add(spinnerAveragingSweeps, "cell 0 25,alignx right");
 		
 		lblPersistentDisplay = new JLabel("Persistent Display");

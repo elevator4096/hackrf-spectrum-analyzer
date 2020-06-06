@@ -233,7 +233,7 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 	private ModelValueBoolean						parameterShowPeaks					= new ModelValueBoolean("Show peaks", false);
 	private ModelValueBoolean						parameterRelativeMode				= new ModelValueBoolean("Relative Mode", false);
 	private ModelValueBoolean						parameterAveragingEnabled			= new ModelValueBoolean("Averaging Enabled", false);
-	private ModelValueInt							parameterAveragingSweeps			= new ModelValueInt("Averaging Sweeps", 15);
+	private ModelValueInt							parameterAveragingSweeps			= new ModelValueInt("Averaging Sweeps", 50);
 
 	private ModelValueBoolean 						parameterDebugDisplay				= new ModelValueBoolean("Debug", false);
 	
