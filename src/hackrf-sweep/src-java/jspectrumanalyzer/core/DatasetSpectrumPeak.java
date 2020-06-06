@@ -16,6 +16,8 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 	protected long		peakFalloutMillis	= 1000;
 	protected long 		averagingSweeps;
 	protected float		peakFallThreshold;
+	
+	protected SMA		smaFilter;
 	/**
 	 * stores EMA decaying peaks
 	 */
@@ -32,7 +34,6 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 	public DatasetSpectrumPeak(float fftBinSizeHz, int freqStartMHz, int freqStopMHz, float spectrumInitPower, float peakFallThreshold, long peakFalloutMillis,long averagingSweeps)
 	{
 		super(fftBinSizeHz, freqStartMHz, freqStopMHz, spectrumInitPower);
-
 		this.peakFalloutMillis = peakFalloutMillis;
 		this.averagingSweeps = averagingSweeps;
 		this.spectrumInitPower = spectrumInitPower;
@@ -50,6 +51,8 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		
 		spectrumAverage = new float[datapoints];
 		Arrays.fill(spectrumAverage, spectrumInitPower);
+		
+		smaFilter = new SMA(averagingSweeps,datapoints);
 		
 
 	}
@@ -158,10 +161,14 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		
 		lastAddedRef = System.currentTimeMillis();
 		
+		smaFilter.setPeriod(averagingSweeps);
+		smaFilter.add(spectrum.clone());
+		spectrumAverage =smaFilter.getAverage();
 		for (int spectrIndex = 0; spectrIndex < spectrum.length; spectrIndex++)
 		{
 			float spectrumVal = spectrum[spectrIndex];
-			spectrumAverage[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumAverage[spectrIndex], timeDiffFromPrevValueMillis,averagingSweeps*timeDiffFromPrevValueMillis);
+			//spectrumAverage[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumAverage[spectrIndex], timeDiffFromPrevValueMillis,averagingSweeps*timeDiffFromPrevValueMillis);
+			//spectrumAverage[spectrIndex] = (float) EMA.MovingAverage(spectrumVal, spectrumAverage[spectrIndex], timeDiffFromPrevValueMillis,averagingSweeps*timeDiffFromPrevValueMillis));
 			spectrum[spectrIndex] = spectrumAverage[spectrIndex];
 		}
 	}
