@@ -595,7 +595,7 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 			//			PowerCalibration calibration	 = new PowerCalibration(-45, -12.5, 40); 
 
 			datasetSpectrum = new DatasetSpectrumPeak(binHz, getFreq().getStartMHz(), getFreq().getEndMHz(),
-					spectrumInitValue, 15, parameterPeakFallRateSecs.getValue() * 1000);
+					spectrumInitValue, 15, parameterPeakFallRateSecs.getValue() * 1000,parameterAveragingSweeps.getValue());
 			chart.getXYPlot().getDomainAxis().setRange(getFreq().getStartMHz(), getFreq().getEndMHz());
 
 			XYSeries spectrumPeaksEmpty	= new XYSeries("peaks");
@@ -1151,6 +1151,10 @@ public class HackRFSweepSpectrumAnalyzer implements HackRFSettings, HackRFSweepD
 		});
 		parameterPeakFallRateSecs.addListener((fallRate) -> {
 			datasetSpectrum.setPeakFalloutMillis(fallRate * 1000l);
+		});
+		
+		parameterAveragingSweeps.addListener((sweeps) -> {
+			datasetSpectrum.setAveragingSweeps(sweeps);
 		});
 
 		parameterSpectrumLineThickness.addListener((thickness) -> {

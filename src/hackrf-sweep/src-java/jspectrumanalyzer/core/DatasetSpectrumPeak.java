@@ -6,12 +6,15 @@ import org.jfree.data.xy.XYSeries;
 
 import jspectrumanalyzer.core.jfc.XYSeriesImmutable;
 
+import java.lang.Math;
+
 public class DatasetSpectrumPeak extends DatasetSpectrum
 {
 	protected long		lastAddedPeak			= System.currentTimeMillis();
 	protected long		lastAddedRef			= System.currentTimeMillis();
 	protected long		lastAddedAverage		= System.currentTimeMillis();
 	protected long		peakFalloutMillis	= 1000;
+	protected long 		averagingSweeps;
 	protected float		peakFallThreshold;
 	/**
 	 * stores EMA decaying peaks
@@ -26,11 +29,12 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 	protected float[]	spectrumPeakHold;
 	
 	
-	public DatasetSpectrumPeak(float fftBinSizeHz, int freqStartMHz, int freqStopMHz, float spectrumInitPower, float peakFallThreshold, long peakFalloutMillis)
+	public DatasetSpectrumPeak(float fftBinSizeHz, int freqStartMHz, int freqStopMHz, float spectrumInitPower, float peakFallThreshold, long peakFalloutMillis,long averagingSweeps)
 	{
 		super(fftBinSizeHz, freqStartMHz, freqStopMHz, spectrumInitPower);
 
 		this.peakFalloutMillis = peakFalloutMillis;
+		this.averagingSweeps = averagingSweeps;
 		this.spectrumInitPower = spectrumInitPower;
 		this.peakFallThreshold = peakFallThreshold;
 		int datapoints = (int) (Math.ceil(freqStopMHz - freqStartMHz) * 1000000d / fftBinSizeHz);
@@ -52,6 +56,10 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 
 	public void setPeakFalloutMillis(long peakFalloutMillis) {
 		this.peakFalloutMillis = peakFalloutMillis;
+	}
+	
+	public void setAveragingSweeps(long averagingSweeps) {
+		this.averagingSweeps = averagingSweeps;
 	}
 	
 	public void copyTo(DatasetSpectrumPeak filtered)
@@ -138,8 +146,7 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		
 		for (int spectrIndex = 0; spectrIndex < spectrum.length; spectrIndex++)
 		{
-			float spectrumVal = spectrum[spectrIndex];
-			spectrumRef[spectrIndex] = spectrumVal;
+			spectrumRef[spectrIndex] = spectrumAverage[spectrIndex];
 		}
 	}
 	
@@ -154,7 +161,7 @@ public class DatasetSpectrumPeak extends DatasetSpectrum
 		for (int spectrIndex = 0; spectrIndex < spectrum.length; spectrIndex++)
 		{
 			float spectrumVal = spectrum[spectrIndex];
-			spectrumAverage[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumAverage[spectrIndex], timeDiffFromPrevValueMillis,peakFalloutMillis);
+			spectrumAverage[spectrIndex] = (float) EMA.calculateTimeDependent(spectrumVal, spectrumAverage[spectrIndex], timeDiffFromPrevValueMillis,averagingSweeps*timeDiffFromPrevValueMillis);
 			spectrum[spectrIndex] = spectrumAverage[spectrIndex];
 		}
 	}
